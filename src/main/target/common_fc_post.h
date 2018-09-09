@@ -177,3 +177,9 @@
 #if defined(USE_RX_CX10)
 #define USE_RX_XN297
 #endif
+
+// Disable filters for IMUF
+#ifdef USE_GYRO_IMUF9001
+#undef USE_GYRO_FAST_KALMAN
+#undef USE_GYRO_BIQUAD_RC_FIR2
+#endif
