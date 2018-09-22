@@ -206,6 +206,7 @@
 #endif
 
 #if (FLASH_SIZE > 256)
+#define USE_PEGASUS_UI
 #define USE_DASHBOARD
 #define USE_GPS
 #define USE_GPS_NMEA
