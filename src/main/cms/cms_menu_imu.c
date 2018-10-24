@@ -65,6 +65,10 @@ static uint8_t rateProfileIndex;
 static char rateProfileIndexString[] = " p-r";
 static controlRateConfig_t rateProfile;
 
+static const char * const cms_offOnLabels[] = {
+    "OFF", "ON"
+};
+
 static long cmsx_menuImu_onEnter(void)
 {
     pidProfileIndex = getCurrentPidProfileIndex();
