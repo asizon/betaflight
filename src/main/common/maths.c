@@ -361,20 +361,28 @@ fix12_t  qConstruct(int16_t num, int16_t den) {
     return (num << 12) / den;
 }
 
+typedef union
+{
+    float    f;
+    uint32_t l;
+} float_long;
+    
+
 // see https://en.wikipedia.org/wiki/Fast_inverse_square_root
 float fast_rsqrt(float number)
 {
-	long i;
-	float x2, y;
+    float_long i;
+    float_long y;
+	float x2;
 	const float threehalfs = 1.5F;
 
 	x2 = number * 0.5F;
-	y  = number;
-	i  = * ( long * ) &y;
-	i  = 0x5f3759df - ( i >> 1 );
-	y  = * ( float * ) &i;
-	y  = y * ( threehalfs - ( x2 * y * y ) );
+	y.f  = number;
+	i.l  = y.l;
+	i.l  = 0x5f3759df - (i.l >> 1);
+	y.f  = i.f;
+	y.f  = y.f * (threehalfs - (x2 * y.f * y.f));
 
-	return y;
+	return y.f;
 }
 
