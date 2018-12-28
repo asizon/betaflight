@@ -730,13 +730,13 @@ static float applyThrustLinearization(float motorOutput)
         static float a, a_reci, b, b_sq;
         if (a != tl) {
             a = tl;
-            a_reci = 1 / a;
-            b = (1 - a) / (2 * a);
+            a_reci = 1.0f / a;
+            b = (1.0f - a) / (2.0f * a);
             b_sq = b * b;
         }
 
         if (motorOutput > 0.0f) {
-            motorOutput = 1.0f / fast_rsqrt( motorOutput * a_reci + b_sq ) - b;
+            motorOutput = 1.0f / fast_rsqrt(motorOutput * a_reci + b_sq) - b;
         }
     }
 #endif
@@ -917,7 +917,7 @@ FAST_CODE_NOINLINE void mixTable(timeUs_t currentTimeUs, uint8_t vbatPidCompensa
     // reestablish old throttle stick feel by counter compensating thrust linearization
     if (motorConfig()->thrustLinearization) {
         const float lt = motorConfig()->thrustLinearization * 0.01f;
-        throttle = throttle * (throttle * lt + 1 - lt);
+        throttle = throttle * (throttle * lt + 1.0f - lt);
     }
 #endif
 

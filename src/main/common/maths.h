@@ -141,7 +141,9 @@ float pow_approx(float a, float b);
 #define pow_approx(a, b)    powf(b, a)
 #endif
 
+#ifdef USE_THRUST_LINEARIZATION
 float fast_rsqrt(float x);
+#endif
 
 void arraySubInt32(int32_t *dest, int32_t *array1, int32_t *array2, int count);
 

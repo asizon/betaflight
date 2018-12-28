@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <math.h>
 
+#include "platform.h"
 #include "axis.h"
 #include "maths.h"
 
@@ -368,6 +369,7 @@ typedef union
 } float_long;
     
 
+#ifdef USE_THRUST_LINEARIZATION
 // see https://en.wikipedia.org/wiki/Fast_inverse_square_root
 float fast_rsqrt(float number)
 {
@@ -385,4 +387,4 @@ float fast_rsqrt(float number)
 
 	return y.f;
 }
-
+#endif
