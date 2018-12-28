@@ -950,6 +950,7 @@ FAST_CODE_NOINLINE void mixTable(timeUs_t currentTimeUs, uint8_t vbatPidCompensa
             throttle = constrainf(throttle, -motorMixMin, 1.0f - motorMixMax);
         }
     }
+
     if (featureIsEnabled(FEATURE_MOTOR_STOP)
         && ARMING_FLAG(ARMED)
         && !featureIsEnabled(FEATURE_3D)

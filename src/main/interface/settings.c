@@ -693,7 +693,7 @@ const clivalue_t valueTable[] = {
     { "motor_pwm_inversion",        VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_OFF_ON }, PG_MOTOR_CONFIG, offsetof(motorConfig_t, dev.motorPwmInversion) },
     { "motor_poles",                VAR_UINT8 | MASTER_VALUE, .config.minmax = { 4, UINT8_MAX }, PG_MOTOR_CONFIG, offsetof(motorConfig_t, motorPoleCount) },
 #ifdef USE_THRUST_LINEARIZATION
-    { "thrust_linear",                VAR_UINT8 | MASTER_VALUE, .config.minmax = { 0, 100 }, PG_MOTOR_CONFIG, offsetof(motorConfig_t, thrustLinearization) },
+    { "thrust_linear",              VAR_UINT8 | MASTER_VALUE, .config.minmax = { 0, 100 }, PG_MOTOR_CONFIG, offsetof(motorConfig_t, thrustLinearization) },
 #endif
 
 // PG_THROTTLE_CORRECTION_CONFIG
