@@ -111,6 +111,7 @@ void pgResetFn_motorConfig(motorConfig_t *motorConfig)
     }
 
     motorConfig->motorPoleCount = 14;   // Most brushes motors that we use are 14 poles
+    motorConfig->thrustLinearization = 0;   // Use no linearization by default
 }
 
 PG_REGISTER_ARRAY(motorMixer_t, MAX_SUPPORTED_MOTORS, customMotorMixer, PG_MOTOR_MIXER, 0);
@@ -721,12 +722,37 @@ static void applyFlipOverAfterCrashModeToMotors(void)
     }
 }
 
+static float applyThrustLinearization(float motorOutput)
+{
+#ifdef USE_THRUST_LINEARIZATION
+    if (motorConfig()->thrustLinearization) {
+        float tl = motorConfig()->thrustLinearization * 0.01f;
+        static float a, a_reci, b, b_sq;
+        if (a != tl) {
+            a = tl;
+            a_reci = 1 / a;
+            b = (1 - a) / (2 * a);
+            b_sq = b * b;
+        }
+
+        if (motorOutput > 0.0f) {
+            motorOutput = 1.0f / fast_rsqrt( motorOutput * a_reci + b_sq ) - b;
+        }
+    }
+#endif
+    return motorOutput;
+}
+
 static void applyMixToMotors(float motorMix[MAX_SUPPORTED_MOTORS], motorMixer_t *activeMixer)
 {
     // Now add in the desired throttle, but keep in a range that doesn't clip adjusted
     // roll/pitch/yaw. This could move throttle down, but also up for those low throttle flips.
     for (int i = 0; i < motorCount; i++) {
-        float motorOutput = motorOutputMin + (motorOutputRange * (motorOutputMixSign * motorMix[i] + throttle * activeMixer[i].throttle));
+        float motorOutput = applyThrustLinearization(
+            motorOutputMixSign * motorMix[i] + throttle * activeMixer[i].throttle);
+
+        motorOutput = motorOutputMin + motorOutputRange * motorOutput;
+
 #ifdef USE_SERVOS
         if (mixerIsTricopter()) {
             motorOutput += mixerTricopterMotorCorrection(i);
@@ -887,6 +913,14 @@ FAST_CODE_NOINLINE void mixTable(timeUs_t currentTimeUs, uint8_t vbatPidCompensa
     updateDynLpfCutoffs(currentTimeUs, throttle);
 #endif
 
+#if defined(USE_THRUST_LINEARIZATION)
+    // reestablish old throttle stick feel by counter compensating thrust linearization
+    if (motorConfig()->thrustLinearization) {
+        const float lt = motorConfig()->thrustLinearization * 0.01f;
+        throttle = throttle * (throttle * lt + 1 - lt);
+    }
+#endif
+
 #if defined(USE_THROTTLE_BOOST)
     if (throttleBoost > 0.0f) {
         const float throttleHpf = throttle - pt1FilterApply(&throttleLpf, throttle);
@@ -916,7 +950,6 @@ FAST_CODE_NOINLINE void mixTable(timeUs_t currentTimeUs, uint8_t vbatPidCompensa
             throttle = constrainf(throttle, -motorMixMin, 1.0f - motorMixMax);
         }
     }
-
     if (featureIsEnabled(FEATURE_MOTOR_STOP)
         && ARMING_FLAG(ARMED)
         && !featureIsEnabled(FEATURE_3D)
