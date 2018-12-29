@@ -368,23 +368,3 @@ typedef union
     uint32_t l;
 } float_long;
     
-
-#ifdef USE_THRUST_LINEARIZATION
-// see https://en.wikipedia.org/wiki/Fast_inverse_square_root
-float fast_rsqrt(float number)
-{
-    float_long i;
-    float_long y;
-	float x2;
-	const float threehalfs = 1.5F;
-
-	x2 = number * 0.5F;
-	y.f  = number;
-	i.l  = y.l;
-	i.l  = 0x5f3759df - (i.l >> 1);
-	y.f  = i.f;
-	y.f  = y.f * (threehalfs - (x2 * y.f * y.f));
-
-	return y.f;
-}
-#endif

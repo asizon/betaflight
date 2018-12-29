@@ -111,7 +111,6 @@ void pgResetFn_motorConfig(motorConfig_t *motorConfig)
     }
 
     motorConfig->motorPoleCount = 14;   // Most brushes motors that we use are 14 poles
-    motorConfig->thrustLinearization = 0;   // Use no linearization by default
 }
 
 PG_REGISTER_ARRAY(motorMixer_t, MAX_SUPPORTED_MOTORS, customMotorMixer, PG_MOTOR_MIXER, 0);
@@ -722,33 +721,12 @@ static void applyFlipOverAfterCrashModeToMotors(void)
     }
 }
 
-static float applyThrustLinearization(float motorOutput)
-{
-#ifdef USE_THRUST_LINEARIZATION
-    if (motorConfig()->thrustLinearization) {
-        float tl = motorConfig()->thrustLinearization * 0.01f;
-        static float a, a_reci, b, b_sq;
-        if (a != tl) {
-            a = tl;
-            a_reci = 1.0f / a;
-            b = (1.0f - a) / (2.0f * a);
-            b_sq = b * b;
-        }
-
-        if (motorOutput > 0.0f) {
-            motorOutput = 1.0f / fast_rsqrt(motorOutput * a_reci + b_sq) - b;
-        }
-    }
-#endif
-    return motorOutput;
-}
-
 static void applyMixToMotors(float motorMix[MAX_SUPPORTED_MOTORS], motorMixer_t *activeMixer)
 {
     // Now add in the desired throttle, but keep in a range that doesn't clip adjusted
     // roll/pitch/yaw. This could move throttle down, but also up for those low throttle flips.
     for (int i = 0; i < motorCount; i++) {
-        float motorOutput = applyThrustLinearization(
+        float motorOutput = pidApplyThrustLinearization(
             motorOutputMixSign * motorMix[i] + throttle * activeMixer[i].throttle);
 
         motorOutput = motorOutputMin + motorOutputRange * motorOutput;
@@ -913,13 +891,8 @@ FAST_CODE_NOINLINE void mixTable(timeUs_t currentTimeUs, uint8_t vbatPidCompensa
     updateDynLpfCutoffs(currentTimeUs, throttle);
 #endif
 
-#if defined(USE_THRUST_LINEARIZATION)
     // reestablish old throttle stick feel by counter compensating thrust linearization
-    if (motorConfig()->thrustLinearization) {
-        const float lt = motorConfig()->thrustLinearization * 0.01f;
-        throttle = throttle * (throttle * lt + 1.0f - lt);
-    }
-#endif
+    throttle = pidCompensateThrustLinearization(throttle);
 
 #if defined(USE_THROTTLE_BOOST)
     if (throttleBoost > 0.0f) {
