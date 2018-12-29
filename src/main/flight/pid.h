@@ -211,10 +211,8 @@ bool pidOsdAntiGravityActive(void);
 bool pidOsdAntiGravityMode(void);
 void pidSetAntiGravityState(bool newState);
 bool pidAntiGravityEnabled(void);
-#ifdef USE_THRUST_LINEARIZATION
-float pidApplyThrustLinearization(float motorValue);
-float pidCompensateThrustLinearization(float throttle);
-#endif
+float pidApplyThrustLinearizationIfSupported(float motorValue);
+float pidCompensateThrustLinearizationIfSupported(float throttle);
 
 #ifdef UNIT_TEST
 #include "sensors/acceleration.h"

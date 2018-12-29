@@ -627,26 +627,28 @@ void pidAcroTrainerInit(void)
 }
 #endif // USE_ACRO_TRAINER
 
-#ifdef USE_THRUST_LINEARIZATION
-float pidCompensateThrustLinearization(float throttle)
+float pidCompensateThrustLinearizationIfSupported(float throttle)
 {
+#ifdef USE_THRUST_LINEARIZATION
     if (thrustLinearization != 0.0f) {
         throttle = throttle * (throttle * thrustLinearization + 1.0f - thrustLinearization);
     }
+#endif
     return throttle;
 }
 
-float pidApplyThrustLinearization(float motorOutput)
+float pidApplyThrustLinearizationIfSupported(float motorOutput)
 {
+#ifdef USE_THRUST_LINEARIZATION
     if (thrustLinearization != 0.0f) {
         if (motorOutput > 0.0f) {
             motorOutput = sqrtf(motorOutput * thrustLinearizationReciprocal +
                                 thrustLinearizationB * thrustLinearizationB) - thrustLinearizationB;
         }
     }
+#endif
     return motorOutput;
 }
-#endif
 
 void pidCopyProfile(uint8_t dstPidProfileIndex, uint8_t srcPidProfileIndex)
 {
