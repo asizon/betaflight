@@ -477,8 +477,8 @@ static FAST_RAM_ZERO_INIT float acroTrainerGain;
 
 #ifdef USE_THRUST_LINEARIZATION
 FAST_RAM_ZERO_INIT float thrustLinearization;
-FAST_RAM_ZERO_INIT float thrustLinearization_reci;
-FAST_RAM_ZERO_INIT float thrustLinearization_b;
+FAST_RAM_ZERO_INIT float thrustLinearizationReciprocal;
+FAST_RAM_ZERO_INIT float thrustLinearizationB;
 #endif
 
 void pidUpdateAntiGravityThrottleFilter(float throttle)
@@ -607,8 +607,8 @@ void pidInitConfig(const pidProfile_t *pidProfile)
 
 #ifdef USE_THRUST_LINEARIZATION
     thrustLinearization = pidProfile->thrustLinearization / 100.0f;
-    thrustLinearization_reci = 1.0f / thrustLinearization;
-    thrustLinearization_b = (1.0f - thrustLinearization) / (2.0f * thrustLinearization);
+    thrustLinearizationReciprocal = 1.0f / thrustLinearization;
+    thrustLinearizationB = (1.0f - thrustLinearization) / (2.0f * thrustLinearization);
 #endif    
 }
 
@@ -642,8 +642,8 @@ float pidApplyThrustLinearization(float motorOutput)
 #ifdef USE_THRUST_LINEARIZATION
     if (thrustLinearization != 0.0f) {
         if (motorOutput > 0.0f) {
-            motorOutput = sqrtf(motorOutput * thrustLinearization_reci +
-                                thrustLinearization_b * thrustLinearization_b) - thrustLinearization_b;
+            motorOutput = sqrtf(motorOutput * thrustLinearizationReciprocal +
+                                thrustLinearizationB * thrustLinearizationB) - thrustLinearizationB;
         }
     }
 #endif

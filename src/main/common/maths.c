@@ -21,7 +21,6 @@
 #include <stdint.h>
 #include <math.h>
 
-#include "platform.h"
 #include "axis.h"
 #include "maths.h"
 
@@ -362,9 +361,3 @@ fix12_t  qConstruct(int16_t num, int16_t den) {
     return (num << 12) / den;
 }
 
-typedef union
-{
-    float    f;
-    uint32_t l;
-} float_long;
-    
