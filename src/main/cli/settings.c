@@ -460,6 +460,11 @@ const char * const lookupTableLedstripColors[COLOR_COUNT] = {
     "DEEP_PINK"
 };
 
+const char* const lookupTableInterpolatedSetpoint[] = {
+    "OFF", "ON", "AVERAGED_2", "AVERAGED_3", "AVERAGED_4"
+};
+
+
 static const char * const lookupTableGyroFilterDebug[] = {
     "ROLL", "PITCH", "YAW"
 };
@@ -470,10 +475,6 @@ static const char * const lookupTablePositionAltSource[] = {
 
 static const char * const lookupTableOffOnAuto[] = {
     "OFF", "ON", "AUTO"
-};
-
-static const char* const lookupTableInterpolatedSetpoint[] = {
-    "OFF", "ON", "AVERAGED_2", "AVERAGED_3", "AVERAGED_4"
 };
 
 static const char* const lookupTableDshotBitbangedTimer[] = {
@@ -639,8 +640,8 @@ const clivalue_t valueTable[] = {
     { "gyro_overflow_detect",       VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_GYRO_OVERFLOW_CHECK }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, checkOverflow) },
 #endif
 #ifdef USE_YAW_SPIN_RECOVERY
-    { "yaw_spin_recovery",          VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_OFF_ON_AUTO }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, yaw_spin_recovery) },
-    { "yaw_spin_threshold",         VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { YAW_SPIN_RECOVERY_THRESHOLD_MIN,  YAW_SPIN_RECOVERY_THRESHOLD_MAX }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, yaw_spin_threshold) },
+    { "yaw_spin_recovery",          VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, .config.lookup = { TABLE_OFF_ON }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, yaw_spin_recovery) },
+    { "yaw_spin_threshold",         VAR_UINT16 | MASTER_VALUE, .config.minmaxUnsigned = { 500,  1950 }, PG_GYRO_CONFIG, offsetof(gyroConfig_t, yaw_spin_threshold) },
 #endif
 
 #ifdef USE_MULTI_GYRO
