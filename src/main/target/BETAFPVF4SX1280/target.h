@@ -37,7 +37,6 @@
 #define SOFTSERIAL1_RX_PIN      PA8
 
 #define USE_UART1
-#define UART1_RX_PIN            PA10
 #define UART1_TX_PIN            PA9
 
 #define USE_UART2
@@ -115,6 +114,11 @@
 
 
 #define ADC1_DMA_OPT                0
+
+#define USE_FLASHFS
+#define USE_FLASH_M25P16
+#define FLASH_CS_PIN            PA10
+#define FLASH_SPI_INSTANCE      SPI2
 
 #define USE_ADC
 #define USE_ADC_INTERNAL
