@@ -97,12 +97,12 @@ void failsafeReset(void);
 
 void failsafeStartMonitoring(void);
 void failsafeUpdateState(void);
+void failsafeCheckDataFailurePeriod(void);
 
 failsafePhase_e failsafePhase(void);
 bool failsafeIsMonitoring(void);
 bool failsafeIsActive(void);
 bool failsafeIsReceivingRxData(void);
-void failsafeCheckDataFailurePeriod(void);
 void failsafeOnRxSuspend(uint32_t suspendPeriod);
 void failsafeOnRxResume(void);
 void failsafeOnValidDataReceived(void);

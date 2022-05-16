@@ -58,7 +58,7 @@
 // 0 - Gyro task start cycle time in 10th of a us
 // 1 - ID of late task
 // 2 - Amount task is late in 10th of a us
-// 3 - Gyro lock skew in clock cycles
+// 3 - Gyro lock skew in 10th of a us
 
 // DEBUG_TIMING_ACCURACY, requires USE_LATE_TASK_STATISTICS to be defined
 // 0 - % CPU busy
@@ -503,12 +503,11 @@ FAST_CODE void scheduler(void)
             if (pidLoopReady()) {
                 taskExecutionTimeUs += schedulerExecuteTask(getTask(TASK_PID), currentTimeUs);
             }
-            if (rxFrameReady()) {
-                // Check for incoming RX data. Don't do this in the checker as that is called repeatedly within
-                // a given gyro loop, and ELRS takes a long time to process this and so can only be safely processed
-                // before the checkers
-                rxFrameCheck(currentTimeUs, cmpTimeUs(currentTimeUs, getTask(TASK_RX)->lastExecutedAtUs), getTask(TASK_RX)->movingSumDeltaTime10thUs / TASK_STATS_MOVING_SUM_COUNT);
-            }
+
+            // Check for incoming RX data. Don't do this in the checker as that is called repeatedly within
+            // a given gyro loop, and ELRS takes a long time to process this and so can only be safely processed
+            // before the checkers
+            rxFrameCheck(currentTimeUs, cmpTimeUs(currentTimeUs, getTask(TASK_RX)->lastExecutedAtUs));
 
             // Check for failsafe conditions without reliance on the RX task being well behaved
             if (cmp32(millis(), lastFailsafeCheckMs) > PERIOD_RXDATA_FAILURE) {
